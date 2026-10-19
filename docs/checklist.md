@@ -5,8 +5,8 @@
 | Programa | Versão Mínima | Status | Observação |
 |----------|--------------|--------|------------|
 | Git | 2.x | ⬜ Verificar | Necessário para versionamento |
-| Docker Desktop | 4.x | ⬜ Verificar | Runtime principal dos containers |
-| Python | 3.11+ | ⬜ Verificar | Loader e scripts |
+| Docker Desktop | 4.x | ✅ Concluído | Runtime principal dos containers |
+| Python | 3.11+ | ⬜ Opcional | Só necessário se você quiser rodar fora do Docker |
 | VS Code | Qualquer | ⬜ Verificar | Editor |
 | Terraform | 1.6+ | ⬜ Verificar | IaC |
 | GitHub CLI (gh) | Opcional | ⬜ Verificar | Facilita operações GitHub |
@@ -34,10 +34,12 @@
 |------|--------|------------|
 | Git configurado (nome + email) | ⬜ Verificar | `git config --global` |
 | GitHub SSH configurado | ⬜ Verificar | Chave SSH adicionada ao GitHub |
-| Docker funcionando | ⬜ Verificar | `docker ps` sem erro |
-| Python funcionando | ⬜ Verificar | `python --version` |
+| Docker funcionando | ✅ Concluído | `docker version` e `docker compose up -d` sem erro |
+| Docker Desktop instalado neste notebook | ✅ Concluído | Sem impactar o ambiente do trabalho |
+| Python no host funcionando | ⬜ Opcional | O projeto roda dentro do Docker |
 | Terraform funcionando | ⬜ Verificar | `terraform version` |
 | Diretório do projeto criado | ✅ Concluído | `Football Data Platform/` |
+| Virtualenv do projeto criada | ⬜ Pendente | `.venv/` local do projeto |
 
 ---
 
@@ -45,10 +47,10 @@
 
 | Item | Status | Observação |
 |------|--------|------------|
-| Repositório criado no GitHub | ⬜ Pendente | Nome sugerido: `football-data-platform` |
-| Git inicializado localmente | ⬜ Pendente | `git init` |
-| Remote configurado | ⬜ Pendente | `git remote add origin ...` |
-| Primeiro commit realizado | ⬜ Pendente | Estrutura base |
+| Repositório criado no GitHub | ✅ Concluído | `football-data-platform` |
+| Git inicializado localmente | ✅ Concluído | `git init` |
+| Remote configurado | ✅ Concluído | `git remote add origin ...` |
+| Primeiro commit realizado | ✅ Concluído | Estrutura base |
 | Branch `main` protegida | ⬜ Pendente | Exige PR para merge |
 | Branch `develop` criada | ⬜ Pendente | Branch de desenvolvimento |
 
@@ -58,8 +60,8 @@
 
 | Serviço | Status | Porta | Observação |
 |---------|--------|-------|------------|
-| PostgreSQL SOURCE | ⬜ Pendente | 5433 | Banco de origem dos dados |
-| PostgreSQL DW | ⬜ Pendente | 5432 | Data Warehouse |
+| PostgreSQL SOURCE | ✅ Concluído | 5435 | Banco de origem dos dados |
+| PostgreSQL DW | ✅ Concluído | 5434 | Data Warehouse |
 | Airbyte | ⬜ Pendente | 8000 | Interface web + API |
 | Airflow | ⬜ Pendente | 8080 | Interface web |
 | Metabase | ⬜ Pendente | 3000 | BI / Dashboards |
@@ -72,9 +74,13 @@
 | Item | Status | Observação |
 |------|--------|------------|
 | `pyproject.toml` criado | ✅ Concluído | Configuração do projeto Python |
-| Ambiente virtual criado | ⬜ Pendente | `.venv/` no diretório do projeto |
-| Dependências instaladas | ⬜ Pendente | `pip install -e ".[dev]"` |
-| `pre-commit` instalado | ⬜ Pendente | `pre-commit install` |
+| Ambiente virtual criado | ⬜ Não necessário | O loader roda em container |
+| Dependências instaladas | ✅ Concluído | Instaladas na imagem Docker do loader |
+| `pre-commit` instalado | ⬜ Pendente | Opcional enquanto o fluxo Docker estiver consolidado |
+| `.env` local criado | ✅ Concluído | Somente neste notebook, fora do Git |
+| Loader Python em Docker | ✅ Concluído | Serviço `ingestion` no `docker-compose.yml` |
+| Testes do loader em Docker | ✅ Concluído | `pytest` passou no container |
+| Loader carregou `raw_matches` | ✅ Concluído | `13321` linhas no `football_source.raw_matches` |
 
 ---
 
@@ -117,6 +123,6 @@
 | Item | Status | Observação |
 |------|--------|------------|
 | `.gitignore` configurado | ✅ Concluído | Secrets e arquivos sensíveis ignorados |
-| `.env.example` criado | ⬜ Pendente | Template de variáveis de ambiente |
+| `.env.example` criado | ✅ Concluído | Variáveis de ambiente específicas do projeto |
 | Trivy configurado | ⬜ Pendente | STEP 15 |
 | Secret scanning ativo | ⬜ Pendente | STEP 15 |

@@ -2,13 +2,13 @@
 
 ## Estado Atual
 
-**STEP:** 1 — Criar estrutura base do repositório
+**STEP:** 4 — Airbyte
 
-**Última implementação concluída:** Estrutura inicial de pastas e documentação criada
+**Última implementação concluída:** Loader Python executado e testado com sucesso dentro do Docker
 
-**Status:** Estrutura de pastas criada localmente. Repositório GitHub ainda não criado.
+**Status:** O loader e os testes já rodam dentro do container `ingestion`, sem depender do Python do Windows. O source recebeu carga inicial com sucesso.
 
-**Próximo objetivo:** Criar o repositório no GitHub, inicializar Git, fazer primeiro commit.
+**Próximo objetivo:** Subir e configurar o Airbyte para replicar `postgres_source` → `postgres_dw`.
 
 ---
 
@@ -27,6 +27,15 @@
 - `pyproject.toml` base criado
 - `.pre-commit-config.yaml` base criado
 - `.sqlfluff` base criado
+- Base Docker isolada iniciada com `docker-compose.yml` e `.env.example`
+- `.env` local criado para o Docker Compose do projeto
+- Containers `postgres_source` e `postgres_dw` subidos com sucesso
+- Conexões DBeaver validadas para `football_source` e `football_dw`
+- Estrutura inicial do loader criada em `ingestion/src/football_data_platform`
+- Testes unitários iniciais criados para helpers de URL e preparação de dados
+- Serviço Docker `ingestion` criado para rodar Python e testes dentro do container
+- `pytest` do loader passou dentro do Docker (`5 passed`)
+- Loader executado com sucesso e carregou `13321` linhas em `football_source.raw_matches`
 
 **Decisões técnicas:**
 - Projeto 100% local/Docker na primeira fase
@@ -45,9 +54,9 @@
 | STEP | Descrição | Status |
 |------|-----------|--------|
 | STEP 0 | Definir escopo | ✅ Concluído |
-| STEP 1 | Criar estrutura base / GitHub repo | 🔄 Em progresso |
-| STEP 2 | Docker base (PostgreSQL SOURCE + DW) | ⬜ Pendente |
-| STEP 3 | Dataset loader (Python) | ⬜ Pendente |
+| STEP 1 | Criar estrutura base / GitHub repo | ✅ Concluído |
+| STEP 2 | Docker base (PostgreSQL SOURCE + DW) | ✅ Concluído |
+| STEP 3 | Dataset loader (Python) | ✅ Concluído |
 | STEP 4 | Airbyte | ⬜ Pendente |
 | STEP 5 | dbt — configuração inicial | ⬜ Pendente |
 | STEP 6 | dbt — Staging | ⬜ Pendente |
@@ -72,8 +81,8 @@
 
 | Componente | Status | Observação |
 |------------|--------|------------|
-| PostgreSQL SOURCE | ⬜ Pendente | Será criado no STEP 2 |
-| PostgreSQL DW | ⬜ Pendente | Será criado no STEP 2 |
+| PostgreSQL SOURCE | ✅ Concluído | Acessível localmente via porta 5435 |
+| PostgreSQL DW | ✅ Concluído | Acessível localmente via porta 5434 |
 | Airbyte | ⬜ Pendente | Será configurado no STEP 4 |
 | Airflow | ⬜ Pendente | Será configurado no STEP 11 |
 | Metabase | ⬜ Pendente | Será configurado no STEP 10 |
@@ -125,9 +134,33 @@
 
 ---
 
+## BI Focus Areas
+
+These are the first analysis themes planned for the BI layer:
+
+1. **Team performance**
+	- wins, draws, losses
+	- goals scored and conceded
+	- goal difference
+	- points by season
+	- ranking over time
+
+2. **Recent form and consistency**
+	- last 5 or 10 matches by team
+	- winning and losing streaks
+	- unbeaten runs
+
+3. **Season-to-season comparison**
+	- team performance changes over the years
+	- teams that improved or declined in level
+	- evolution of home wins, draws, and losses
+	- comparison of points and goal difference across seasons
+
+---
+
 ## Próximos Passos
 
-1. Criar repositório no GitHub: `football-data-platform`
-2. Inicializar Git no diretório local
-3. Fazer primeiro commit com estrutura base
-4. Configurar branch protection no GitHub
+1. Subir e configurar o Airbyte local
+2. Criar a conexão `postgres_source` → `postgres_dw`
+3. Validar o primeiro sync para a camada `raw`
+4. Depois seguir para o STEP 5 com dbt

@@ -1,0 +1,67 @@
+services:
+  postgres_source:
+    image: postgres:16-alpine
+    container_name: football-data-postgres-source
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${FDP_POSTGRES_SOURCE_DB}
+      POSTGRES_USER: ${FDP_POSTGRES_SOURCE_USER}
+      POSTGRES_PASSWORD: ${FDP_POSTGRES_SOURCE_PASSWORD}
+    ports:
+      - "${FDP_POSTGRES_SOURCE_HOST_PORT:-5435}:5432"
+    volumes:
+      - postgres_source_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FDP_POSTGRES_SOURCE_USER} -d ${FDP_POSTGRES_SOURCE_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - football_data_network
+
+  postgres_dw:
+    image: postgres:16-alpine
+    container_name: football-data-postgres-dw
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${FDP_POSTGRES_DW_DB}
+      POSTGRES_USER: ${FDP_POSTGRES_DW_USER}
+      POSTGRES_PASSWORD: ${FDP_POSTGRES_DW_PASSWORD}
+    ports:
+      - "${FDP_POSTGRES_DW_PORT}:5432"
+    volumes:
+      - postgres_dw_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${FDP_POSTGRES_DW_USER} -d ${FDP_POSTGRES_DW_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - football_data_network  
+  
+  ingestion:
+    build:
+      context: .
+      dockerfile: ingestion/Dockerfile
+    container_name: football-data-ingestion
+    depends_on:
+      postgres_source:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /workspace/ingestion/src
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: ["python", "-m", "football_data_platform.cli"]
+    networks:
+      - football_data_network
+
+volumes:
+  postgres_source_data:
+  postgres_dw_data:
+
+networks:
+  football_data_network:
+    name: football-data-network
